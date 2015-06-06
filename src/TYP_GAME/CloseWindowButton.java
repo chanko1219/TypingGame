@@ -1,4 +1,4 @@
-package TYP_GAME;
+package typ_game;
 
 import java.awt.Component;
 import java.awt.Window;
