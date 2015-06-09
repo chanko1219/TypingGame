@@ -41,7 +41,6 @@ public class StartFrame extends JFrame implements ActionListener {
 		c_name=c_field.getText();
 		s_name=s_field.getText();
 		
-		//System.out.println(c_name+s_name);
 		GameMain.Frame.setVisible(false);
 		GameFrame GF = new GameFrame(c_name,s_name);
 		GF.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//右上の×印を押した時の動作

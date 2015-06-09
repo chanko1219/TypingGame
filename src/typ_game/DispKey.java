@@ -3,7 +3,7 @@ package typ_game;
 public class DispKey {
 	private TextRead TR;
 	private String question="?'123456789";  //タイピング問題文字列
-	public String[] qet_buf = new String[100];	//問題配列 
+	private String[] qet_buf = new String[100];	//問題配列 
     private int charNumMax;   //タイピング問題文字列の文字列長
     
     DispKey(int qetNum){

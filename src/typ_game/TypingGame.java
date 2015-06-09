@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class TypingGame extends JPanel implements KeyListener, ActionListener{
+public class TypingGame extends JPanel implements KeyListener{
     private final int GAME_CONFIG_WAITING = 0;     //ゲーム状態フラグ定数（タイトル画面時）
     private final int GAME_CONFIG_PLAYING = 1;     //ゲーム状態フラグ定数（ゲーム中）
     private DispKey DKey;      //タイピング問題管理クラス
@@ -25,29 +25,27 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
     private Calendar cal;      //カレンダークラス
     private long str_len;	   //文字列表示長さ
     private long sum_str_len;  //正解文字数の合計
-    private long cnt;		   //カウンタ
+    private long cnt;		   //入力回数カウンタ
     private long startTime;    //ゲーム開始時間
     private long endTime;      //ゲーム終了時間
     private String demoStr;    //経過時間文字列
     private FontMetrics fm;	   //文字幅取得r
     private int CF;		   	   //正解判定フラグ
-    private Timer timer;	   //残り時間計測
-    private JLabel TimerLabel; //残り時間表示ラベル
-    private String time_str;   //ラベル用文字列
-    private int sec;		   //経過時間計測
+    private TypingTimer tt;	   //タイピングゲームのタイマー	
     private DecimalFormat df; //スコア表示の小数桁数を設定
     private Client clt;		   //通信用のクライアント
    
     
-    TypingGame(String str1, String str2){
+    TypingGame(Client tempclt) throws IOException{
     	        gameConfig = GAME_CONFIG_WAITING;
-    	        addKeyListener(this);
-    	        setFocusable(true);
-    	        clt= new Client(str1,str2);
+    	        this.clt= tempclt;
     	        demoStr = "";
     	        df= new DecimalFormat("0.00");
     }
     
+    TypingGame(){
+    	
+    }
     public void gameStart(){
         qetNum = 0;
         CF = 0;
@@ -57,14 +55,11 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
         DKey = new DispKey(clt.getQetNum());
         DKey.setQuestion(bufNum);
         str_len=DKey.getCharNumMax();
+        sum_len=10;
         sum_str_len=0;
         startTime = cal.getTimeInMillis();
-        sum_len=10;
-        timer =new Timer(1000,this);
-        timer.start();
-        sec=0;
-        TimerLabel = new JLabel();
-        this.add(TimerLabel);
+        tt = new TypingTimer(this);
+        this.add(tt.getTimerLabel());
     }
     
     public void gameContinue(){
@@ -75,7 +70,7 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
         sum_len=10;
     }
     
-    public void gameEnd(){
+    public void gameEnd() throws IOException{
         long sumTime;
         double crr;
         cal = Calendar.getInstance();
@@ -95,7 +90,7 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
     }
     @Override
     public void keyPressed(KeyEvent e){
-        
+        System.out.println("test");
     }
     public void keyReleased(KeyEvent e){
     
@@ -113,13 +108,18 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
     	    cnt++;
    			CF=DKey.compareToInpKey(e.getKeyChar(), qetNum);
    			if(CF == 0){
-   				this.nextChar();
+   				try {
+					this.nextChar();
+				} catch (IOException e1) {
+					// TODO 自動生成された catch ブロック
+					e1.printStackTrace();
+				}
    			}
    		    break;
     	}
     	repaint();
     }
-    private void nextChar(){
+    private void nextChar() throws IOException{
         if(qetNum < str_len - 1){
             qetNum += 1;
         }else{
@@ -129,10 +129,8 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
         	}
         	else{
         		this.gameEnd();
-        		
-        		 timer.stop();
-   		      time_str="";
-   		      TimerLabel.setText(time_str);
+        		tt.TimerStop();
+   		        tt.setText("");
         	}
         }
     }
@@ -160,8 +158,12 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
             		sum_str_len++;
             		CF=-1;
             	}
+            	else if(CF==-1){
+            		g.fillRect(sum_len-fw, 20, fw, 20);
+            	}
             	else{
             		g.fillRect(sum_len-fw, 20, fw, 20);
+            		g.drawString("miss!", sum_len-fw, 60);
             	}
             	g.setColor(Color.black);
             	g.drawString(QetString, 10, 40);
@@ -171,24 +173,4 @@ public class TypingGame extends JPanel implements KeyListener, ActionListener{
        
     }
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		 time_str="残り時間は" + (60-sec) + "秒です";
-		 TimerLabel.setText(time_str);
-
-		    if (sec >= 60){
-		      timer.stop();
-		      time_str="";
-		      TimerLabel.setText(time_str);
-		      this.gameEnd();
-		    }
-		    else if(sec >=50){
-		    	TimerLabel.setForeground(Color.red);
-		    	sec++;
-		    }
-		    else{
-		      sec++;
-		    }
-		
-	}
 }
