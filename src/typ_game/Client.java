@@ -18,8 +18,10 @@ public class Client {
 	private Socket s=null;
 	private BufferedReader in;
 	private PrintWriter out;
-	private int flg;
-	
+	private int flg;	//-2:スコア送信直後に通信切断 -1:スコアを表示せずにゲーム開始 正の数:スコア表示
+	private final int MAX_PARTICIPANT=10;
+	private double[] Scores= new double[MAX_PARTICIPANT];
+	private String[] Names=new String[MAX_PARTICIPANT];
 	Client(String str1, String str2){
 		this.c_name=str1;
 		this.s_name=str2;
@@ -62,25 +64,47 @@ public class Client {
 	//問題番号を取得する
 	public int getQetNum(){
 		out.println("GetNum");
-		int temp=0;
 		try {
-			temp= Integer.parseInt(in.readLine());
+			qetNum= Integer.parseInt(in.readLine());
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return temp;
+
+		//フラグ初期化
+		flg=-2;
+		return qetNum;
 	}
 
 
 	//サーバーに得点を送信
-	public double sendScore(double score) throws IOException{
+	public void sendScore(double score) throws IOException{
 		out.println("SendScore");
 		out.println(score+"");
-		double temp=0;
-		temp=Double.parseDouble(in.readLine());
-		return temp;
+		int i=0;
+		String ope="";
+		ope=in.readLine();
+		while(ope.equals("SCORE")){
+			Names[i]=in.readLine();
+			Scores[i]=Double.parseDouble(in.readLine());
+			i++;
+			ope=in.readLine();
+		}
+		if(ope.equals("FLAG")){
+			flg=Integer.parseInt(in.readLine());
+		}
+		if(flg==-2){
+			//この関数を呼び出した後,TypginGame.javaの方でゲームの終了処理を入れる
+			endConnection();
+		}else if(flg==-1){//初回
+
+		}else if(flg>0){
+			//暫定的なスコア表示の何か
+			for(int j=0;j<i;j++){
+				System.out.println(Names[j]+":"+Scores[j]);
+			}
+		}
 	}
 	public void endConnection(){
 		out.println("END");
@@ -91,7 +115,7 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//flgの値を取得
 	public int getFlag(){
 		return this.flg;

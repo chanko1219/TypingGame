@@ -17,11 +17,9 @@ import javax.swing.Timer;
 
 public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	private Client cl; 
-	private JPanel WaitPanel;
-	private JLabel WaitLabel;
-	private String WaitString;
+	private WaitPanel WP;
 	private Timer wt;
-	private TypingGame tp;
+	private TypingGame GP;
 	private int cntTime;
 	private JPanel cardPanel;
 	private CardLayout layout;
@@ -30,18 +28,14 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	GameFrame(String str1, String str2){
 		addKeyListener(this);
 		cntTime=0;
-		WaitPanel= new JPanel();
-		WaitLabel = new JLabel();
-		WaitString="waiting";
-		WaitLabel.setText(WaitString);
-		WaitPanel.add(WaitLabel);
+		WP= new WaitPanel();
 		wt = new Timer(500,this);
 		wt.start();
-		tp = null;
+		GP = null;
 		cl = new Client(str1, str2);
 		try {
 			cl.initServer();
-			tp = new TypingGame(cl);
+			GP = new TypingGame(cl);
 		} catch (IOException e){
 			e.printStackTrace();
 		}
@@ -50,8 +44,8 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 		 layout = new CardLayout();
 		 cardPanel.setLayout(layout);
 		 flg=0;
-		 cardPanel.add(WaitPanel, "waiting");
-		 cardPanel.add(tp, "typing");
+		 cardPanel.add(WP, "waiting");
+		 cardPanel.add(GP, "typing");
 		 getContentPane().add(cardPanel, BorderLayout.CENTER);
 	}
 	
@@ -60,26 +54,12 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	public void actionPerformed(ActionEvent e) {
 		if(cl.getFlag()==1||cntTime>60){
 			wt.stop();
-			layout.next(cardPanel);
+			layout.show(cardPanel,"typing");
 			flg=1;
 		}
-		switch(cntTime%3){
-		case 0:
-			WaitString="waiting.";
-			WaitLabel.setText(WaitString);
-			break;
-		case 1:
-			WaitString="waiting..";
-			WaitLabel.setText(WaitString);
-			break;
-		case 2:
-			WaitString="waiting...";
-			WaitLabel.setText(WaitString);
-			break;
-			
-		}
+		WP.ChangeWaitingText(cntTime);
 		cntTime++;
-		System.out.println(cntTime);
+		//System.out.println(cntTime);
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -91,7 +71,7 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	}
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if(flg==1) tp.keyTyped(e);
+		if(flg==1) GP.keyTyped(e);
 	}
 
 }
