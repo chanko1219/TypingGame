@@ -90,7 +90,7 @@ public class TypingGame extends JPanel implements KeyListener{
         GF.setWaitText("Waiting result");
         GF.changePanel("waiting");
         repaint();
-        //clt.sendScore(score);		//各プレイヤー（クライアント）のスコアが揃うまで待つ
+        clt.sendScore(score);		//各プレイヤー（クライアント）のスコアが揃うまで待つ
         
     }
     @Override
