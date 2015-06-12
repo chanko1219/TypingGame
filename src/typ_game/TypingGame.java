@@ -34,11 +34,13 @@ public class TypingGame extends JPanel implements KeyListener{
     private TypingTimer tt;	   //タイピングゲームのタイマー	
     private DecimalFormat df; //スコア表示の小数桁数を設定
     private Client clt;		   //通信用のクライアント
+    private GameFrame GF;		//ゲーム画面
    
     
-    TypingGame(Client tempclt) throws IOException{
+    TypingGame(Client tempclt, GameFrame gf) throws IOException{
     	        gameConfig = GAME_CONFIG_WAITING;
     	        this.clt= tempclt;
+    	        this.GF=gf;
     	        demoStr = "";
     	        df= new DecimalFormat("0.00");
     }
@@ -84,9 +86,12 @@ public class TypingGame extends JPanel implements KeyListener{
         else{
         	score=0;
         }
-        clt.sendScore(score);
         demoStr ="score : "+df.format(score);
+        GF.setWaitText("Waiting result");
+        GF.changePanel("waiting");
         repaint();
+        clt.sendScore(score);		//各プレイヤー（クライアント）のスコアが揃うまで待つ
+        
     }
     @Override
     public void keyPressed(KeyEvent e){

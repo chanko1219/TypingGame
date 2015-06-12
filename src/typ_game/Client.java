@@ -97,9 +97,9 @@ public class Client {
 		if(flg==-2){
 			//この関数を呼び出した後,TypginGame.javaの方でゲームの終了処理を入れる
 			endConnection();
-		}else if(flg==-1){//初回
+		}else if(flg==1){//初回
 
-		}else if(flg>0){
+		}else if(flg>1){
 			//暫定的なスコア表示の何か
 			for(int j=0;j<i;j++){
 				System.out.println(Names[j]+":"+Scores[j]);

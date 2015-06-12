@@ -13,8 +13,13 @@ public class WaitPanel extends JPanel {
 		WaitLabel.setText(WaitString);
 		this.add(WaitLabel);
 	}
+	
+	public void setText(String str){
+		WaitString=str;
+		WaitLabel.setText(WaitString);
+	}
 
-	public void ChangeWaitingText(int i){
+	public void changeWaitingText(int i){
 		switch(i%5){
 		case 0:
 			WaitString="waiting.";

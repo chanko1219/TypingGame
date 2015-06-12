@@ -35,7 +35,8 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 		cl = new Client(str1, str2);
 		try {
 			cl.initServer();
-			GP = new TypingGame(cl);
+			cl.sendScore(-1);
+			GP = new TypingGame(cl,this);
 		} catch (IOException e){
 			e.printStackTrace();
 		}
@@ -49,15 +50,32 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 		 getContentPane().add(cardPanel, BorderLayout.CENTER);
 	}
 	
+	public void changePanel(String str){
+		layout.show(cardPanel, str);
+	}
+	
+	public void setWaitText(String str){
+		WP.setText(str);
+	}
+	
+	public void sendScore(){
+		try {
+			cl.sendScore(-1);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	//一定時間経過するとClientのフラグが立ってなくてもゲームを開始する
 	public void actionPerformed(ActionEvent e) {
-		if(cl.getFlag()==1||cntTime>60){
+		if(cl.getFlag()>0||cntTime>60){
 			wt.stop();
 			layout.show(cardPanel,"typing");
 			flg=1;
 		}
-		WP.ChangeWaitingText(cntTime);
+		WP.changeWaitingText(cntTime);
 		cntTime++;
 		//System.out.println(cntTime);
 	}

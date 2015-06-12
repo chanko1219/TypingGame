@@ -47,7 +47,6 @@ public class StartFrame extends JFrame implements ActionListener {
 		GF.setBounds(500, 100, 600, 300);					//生成したGameFrameeのインスタンスであるGFを画面に出力
 		GF.setTitle("TypingGame");
 		GF.setVisible(true); 
-
 	}
 
 }
