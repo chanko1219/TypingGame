@@ -18,28 +18,30 @@ import javax.swing.Timer;
 public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	private Client cl; 
 	private WaitPanel WP;
+	private TypingGamePanel TGP;
+	private ResultPanel RP;
 	private Timer wt;
-	private TypingGame GP;
 	private int cntTime;
 	private JPanel cardPanel;
 	private CardLayout layout;
-	private int flg;		//現在の画面フラグ(0:待ち画面,1:ゲーム開始画面)
-	private ComFlag cmf;
+	private int flg;		//現在の画面フラグ(0:待ち画面,1:ゲーム開始画面,2:結果表示画面)
+	private sendScoreTh sST;
 	
 	GameFrame(String str1, String str2){
 		addKeyListener(this);
 		cntTime=0;
 		WP= new WaitPanel();
+		 flg=0;
 		wt = new Timer(500,this);
 		wt.start();
-		GP = null;
+		TGP = null;
 		cl = new Client(str1, str2);
+		RP= new ResultPanel(cl,this);
 		try {
 			cl.initServer();
-			cmf= new ComFlag(cl);
-			cmf.start();
-			//cl.sendScore(-1);
-			GP = new TypingGame(cl,this);
+			sST= new sendScoreTh(cl,-1);
+			sST.start();
+			TGP = new TypingGamePanel(cl,this);
 		} catch (IOException e){
 			e.printStackTrace();
 		}
@@ -47,14 +49,26 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 		 cardPanel = new JPanel();
 		 layout = new CardLayout();
 		 cardPanel.setLayout(layout);
-		 flg=0;
 		 cardPanel.add(WP, "waiting");
-		 cardPanel.add(GP, "typing");
+		 cardPanel.add(RP,"result");
+		 cardPanel.add(TGP, "typing");
 		 getContentPane().add(cardPanel, BorderLayout.CENTER);
 	}
 	
 	public void changePanel(String str){
 		layout.show(cardPanel, str);
+		switch(str){
+			case "waiting":
+				this.flg=0;
+				break;
+			case "typing":
+				this.flg=1;
+				setFocusable(true);
+				break;
+			case "result":
+				this.flg=2;
+				break;
+		}
 	}
 	
 	public void setWaitText(String str){
@@ -70,17 +84,42 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 		}
 	}
 	
+	public void setParticipant(){
+		RP.setParticipant();
+	}
+	
+	public void setScores(){
+		RP.setScores();
+	}
+	
+	public void setNames(){
+		RP.setNames();
+	}
+	
+	public void setResultPanel(){
+		RP.setParticipant();
+		RP.setScores();
+		RP.setNames();
+		RP.setResultText();
+	}
 	@Override
 	//一定時間経過するとClientのフラグが立ってなくてもゲームを開始する
 	public void actionPerformed(ActionEvent e) {
-		if(cl.getFlag()>0||cntTime>20){
-			wt.stop();
-			layout.show(cardPanel,"typing");
-			this.flg=1;
+		switch(flg){
+		case 0:
+			if(cl.getFlag()>0||cntTime>60){
+				wt.stop();
+				this.changePanel("typing");
+			}
+			WP.changeWaitingText(cntTime);
+			cntTime++;
+			break;
+		case 1:
+			break;
+		case 2:
+			RP.actionPerformed(e);
+			break;
 		}
-		WP.changeWaitingText(cntTime);
-		cntTime++;
-		//System.out.println(cntTime);
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -92,7 +131,15 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	}
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if(this.flg==1) GP.keyTyped(e);
+		switch(flg){
+		case 0:
+			break;
+		case 1:
+			TGP.keyTyped(e);
+			break;
+		case 2:
+			break;
+		}
 	}
 
 }

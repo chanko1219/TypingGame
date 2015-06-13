@@ -22,13 +22,15 @@ public class Client {
 	private final int MAX_PARTICIPANT=10;
 	private double[] Scores= new double[MAX_PARTICIPANT];
 	private String[] Names=new String[MAX_PARTICIPANT];
+	private InetAddress add;
+	private int ptc; //ゲームの実際の参加者
+	
 	Client(String str1, String str2){
 		this.c_name=str1;
 		this.s_name=str2;
 		this.qetNum=0;
 		this.flg=0;
 	}
-	private InetAddress add;
 	//サーバーとの接続確立を行いqet_numにサーバーから得た問題番号を格納
 	public void initServer()throws IOException{
 		add=InetAddress.getByName(s_name);
@@ -91,6 +93,7 @@ public class Client {
 			i++;
 			ope=in.readLine();
 		}
+		this.ptc=i;		//参加者数を記録
 		if(ope.equals("FLAG")){
 			flg=Integer.parseInt(in.readLine());
 		}
@@ -116,6 +119,21 @@ public class Client {
 		}
 	}
 
+	//参加者人数を取得（sendScore実行後）
+    public int getParticipant(){
+    	return this.ptc;
+    }
+    
+    //参加者全員の得点を取得
+    public double[] getScore(){
+    	return this.Scores;
+    }
+  
+    //参加者全員の名前を取得
+    public String[] getNames(){
+    	return this.Names;
+    }
+    
 	//flgの値を取得
 	public int getFlag(){
 		return this.flg;

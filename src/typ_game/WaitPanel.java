@@ -9,7 +9,7 @@ public class WaitPanel extends JPanel {
 	
 	WaitPanel(){
 		WaitLabel = new JLabel();
-		WaitString="waiting";
+		WaitString="waiting\n";
 		WaitLabel.setText(WaitString);
 		this.add(WaitLabel);
 	}

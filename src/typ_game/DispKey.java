@@ -24,7 +24,6 @@ public class DispKey {
         char activeChar = 0;
         if(num < charNumMax){
             activeChar = question.charAt(num);
-            //if(activeChar >= 'a' && activeChar<= 'z') activeChar=activeChar-32;
         }
         return activeChar;
     }
@@ -35,27 +34,18 @@ public class DispKey {
         int upperKeyChar = 0;
         
         ret = 0;
+        upperKeyChar = input_c;
         
-        if(input_c >= 'A' && input_c <= 'Z'||input_c >= 'a' && input_c <= 'z'|| input_c >= '0' && input_c <= '9'||
-        		input_c==' ' || input_c=='.'||input_c==',' ||input_c=='?'||input_c=='\''||input_c=='-'){
-            upperKeyChar = input_c;
-       }
-        else{
-            ret = 2;
-        }
-        
-        if(ret != 2){
             /*正解・不正解判定*/
             if(upperKeyChar == this.getActiveChar(num)){
                 ret = 0;
             }else{
                 ret = 1;
             }
-        }
         
         /*戻り値　0:正解
                 　1:不正解
-                　2:解答対象外 */
+                　*/
         return ret;
    
     }

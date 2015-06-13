@@ -13,14 +13,14 @@ public class TypingTimer implements ActionListener {
     private JLabel TimerLabel; //残り時間表示ラベル
     private String time_str;   //ラベル用文字列
     private int sec;		   //経過時間計測
-    private TypingGame TG;	   //実行中のTyingGameのインスタンス
+    private TypingGamePanel TGP;	   //実行中のTyingGameのインスタンス
 	
-    TypingTimer(TypingGame tg){
+    TypingTimer(TypingGamePanel temptgp){
     	 sec=0;
     	 timer=new Timer(1000,this);
     	 timer.start();
          TimerLabel = new JLabel();
-         TG=tg;
+         TGP=temptgp;
     }
     
     public JLabel getTimerLabel(){
@@ -45,7 +45,7 @@ public class TypingTimer implements ActionListener {
 		      time_str="";
 		      TimerLabel.setText(time_str);
 		      try {
-				TG.gameEnd();
+				TGP.gameEnd();
 			} catch (IOException e1) {
 				// TODO 自動生成された catch ブロック
 				e1.printStackTrace();
