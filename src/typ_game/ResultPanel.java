@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ResultPanel extends JPanel implements ActionListener {
-	private Client clt;
+	//private Client clt;
 	private GameFrame GF;
 	private int ptc;
 	private double[] Scores;
@@ -17,8 +17,8 @@ public class ResultPanel extends JPanel implements ActionListener {
 	private String resultText;
 	private JButton nextGameButton;
 	
-	ResultPanel(Client tempclt, GameFrame tempgf){
-		this.clt=tempclt;
+	ResultPanel(GameFrame tempgf){
+		//this.clt=tempclt;
 		this.GF=tempgf;
 		this.ptc=1;
 		this.Scores=null;
@@ -30,15 +30,15 @@ public class ResultPanel extends JPanel implements ActionListener {
 	}
 	
 	public void setParticipant(){
-		this.ptc=clt.getParticipant();
+		this.ptc=GF.clt.getParticipant();
 	}
 	
 	public void setScores(){
-		this.Scores=clt.getScore();
+		this.Scores=GF.clt.getScore();
 	}
 	
 	public void setNames(){
-		this.Names=clt.getNames();
+		this.Names=GF.clt.getNames();
 	}
 	
 	public void setResultText(){

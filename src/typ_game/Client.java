@@ -84,7 +84,7 @@ public class Client {
 	public void sendScore(double score) throws IOException{
 		out.println("SendScore");
 		out.println(score+"");
-		int i=0;
+		/*int i=0;
 		String ope="";
 		ope=in.readLine();
 		while(ope.equals("SCORE")){
@@ -107,7 +107,8 @@ public class Client {
 			for(int j=0;j<i;j++){
 				System.out.println(Names[j]+":"+Scores[j]);
 			}
-		}
+		}*/
+		//System.out.println("end,sendScore");
 	}
 	public void endConnection(){
 		out.println("END");
@@ -118,8 +119,25 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-
-	//参加者人数を取得（sendScore実行後）
+	
+	//サーバーに参加者の得点を問い合わせる
+	public void comScore() throws IOException{
+		out.println("comScore");
+		int i=0;
+		String ope="";
+		ope=in.readLine();
+		System.out.println("test");
+		while(ope.equals("SCORE")){
+			Names[i]=in.readLine();
+			Scores[i]=Double.parseDouble(in.readLine());
+			i++;
+			ope=in.readLine();
+		}
+		
+		this.ptc=i;		//参加者数を記録
+	}
+	
+	//参加者人数を取得（comScore実行後）
     public int getParticipant(){
     	return this.ptc;
     }
@@ -134,8 +152,12 @@ public class Client {
     	return this.Names;
     }
     
-	//flgの値を取得
-	public int getFlag(){
-		return this.flg;
+	//ゲームが開始できるかサーバーに確認（得点要求できるかも確認）
+	public boolean getStartable() throws IOException{
+		out.println("getStartable");
+		String ope="";
+		ope=in.readLine();
+		boolean temp=(ope.equals("ok"));
+		return temp;
 	}
 }

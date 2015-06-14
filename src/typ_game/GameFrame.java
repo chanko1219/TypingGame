@@ -9,39 +9,34 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.*;
+import java.util.Timer;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 public class GameFrame extends JFrame implements ActionListener, KeyListener {
-	private Client cl; 
+	public Client clt; 
 	private WaitPanel WP;
 	private TypingGamePanel TGP;
 	private ResultPanel RP;
-	private Timer wt;
-	private int cntTime;
+	private Timer timer;
 	private JPanel cardPanel;
 	private CardLayout layout;
 	private int flg;		//現在の画面フラグ(0:待ち画面,1:ゲーム開始画面,2:結果表示画面)
-	private sendScoreTh sST;
 	
 	GameFrame(String str1, String str2){
 		addKeyListener(this);
-		cntTime=0;
 		WP= new WaitPanel();
 		 flg=0;
-		wt = new Timer(500,this);
-		wt.start();
 		TGP = null;
-		cl = new Client(str1, str2);
-		RP= new ResultPanel(cl,this);
+		clt = new Client(str1, str2);
+		RP= new ResultPanel(this);
 		try {
-			cl.initServer();
-			sST= new sendScoreTh(cl,-1);
-			sST.start();
-			TGP = new TypingGamePanel(cl,this);
+			clt.initServer();
+			timer = new Timer();
+			timer.schedule(new WaitTask(this), 500, 500);
+			clt.sendScore(-1);
+			TGP = new TypingGamePanel(this);
 		} catch (IOException e){
 			e.printStackTrace();
 		}
@@ -77,42 +72,27 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	
 	public void sendScore(){
 		try {
-			cl.sendScore(-1);
+			clt.sendScore(-1);
 		} catch (IOException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 	}
-	
-	public void setParticipant(){
-		RP.setParticipant();
-	}
-	
-	public void setScores(){
-		RP.setScores();
-	}
-	
-	public void setNames(){
-		RP.setNames();
-	}
-	
 	public void setResultPanel(){
 		RP.setParticipant();
 		RP.setScores();
 		RP.setNames();
 		RP.setResultText();
 	}
+	
+	public void changeWaitingText(int i){
+		WP.changeWaitingText(i);
+	}
 	@Override
 	//一定時間経過するとClientのフラグが立ってなくてもゲームを開始する
 	public void actionPerformed(ActionEvent e) {
 		switch(flg){
 		case 0:
-			if(cl.getFlag()>0||cntTime>60){
-				wt.stop();
-				this.changePanel("typing");
-			}
-			WP.changeWaitingText(cntTime);
-			cntTime++;
 			break;
 		case 1:
 			break;

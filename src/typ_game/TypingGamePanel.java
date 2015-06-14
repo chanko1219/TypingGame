@@ -5,13 +5,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.Timer;
 import java.io.*;
 
 import javax.swing.text.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 public class TypingGamePanel extends JPanel implements KeyListener{
     private final int WAITING = 0;     //ゲーム状態フラグ定数（タイトル画面時）
@@ -30,16 +30,12 @@ public class TypingGamePanel extends JPanel implements KeyListener{
     private long endTime;      //ゲーム終了時間
     private FontMetrics fm;	   //文字幅取得r
     private int CF;		   	   //正解判定フラグ
-    private TypingTimer tt;	   //タイピングゲームのタイマー	
+    private Timer timer;		//タイマー
     private DecimalFormat df; //スコア表示の小数桁数を設定
-    private Client clt;		   //通信用のクライアント
-    private GameFrame GF;		//ゲーム画面
-    private sendScoreTh sST;   //スコア送信用スレッド
+    public GameFrame GF;		//ゲーム画面
    
-    
-    TypingGamePanel(Client tempclt, GameFrame gf) throws IOException{
+    TypingGamePanel(GameFrame gf) throws IOException{
     	        gameConfig = WAITING;
-    	        this.clt= tempclt;
     	        this.GF=gf;
     	        df= new DecimalFormat("0.00");
     }
@@ -53,14 +49,14 @@ public class TypingGamePanel extends JPanel implements KeyListener{
         bufNum=0;
         gameConfig = PLAYING;
         cal = Calendar.getInstance(); cnt=0;
-        DKey = new DispKey(clt.getQetNum());
+        DKey = new DispKey(GF.clt.getQetNum());
         DKey.setQuestion(bufNum);
         str_len=DKey.getCharNumMax();
         sum_len=10;
         sum_str_len=0;
         startTime = cal.getTimeInMillis();
-        tt = new TypingTimer(this);
-        this.add(tt.getTimerLabel());
+		timer = new Timer();
+		timer.schedule(new TypingTimerTask(this),0, 1000);
     }
     
     public void gameContinue(){
@@ -86,17 +82,12 @@ public class TypingGamePanel extends JPanel implements KeyListener{
         	score=0;
         }
         repaint();
-        sST= new sendScoreTh(clt,score);
-        sST.start();
-        System.out.println("test");
+        GF.clt.sendScore(score);
         GF.setWaitText("Waiting result");	//各プレイヤー（クライアント）のスコアが揃うまで待つ
         GF.changePanel("waiting");
-        try {
-			sST.join();
-		} catch (InterruptedException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
+        while(!GF.clt.getStartable());{	
+        }
+        GF.clt.comScore();
         GF.setResultPanel();
         GF.changePanel("result");
         
@@ -112,8 +103,8 @@ public class TypingGamePanel extends JPanel implements KeyListener{
         	}
         	else{
         		this.gameEnd();
-        		tt.TimerStop();
-   		        tt.setText("");
+        		//timer.stop();
+   		        //tt.setText("");
         	}
         }
     }

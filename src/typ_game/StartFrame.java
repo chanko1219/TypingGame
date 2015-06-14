@@ -45,7 +45,7 @@ public class StartFrame extends JFrame implements ActionListener {
 		GameFrame GF = new GameFrame(c_name,s_name);
 		GF.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//右上の×印を押した時の動作
 		GF.setBounds(500, 100, 600, 300);					//生成したGameFrameeのインスタンスであるGFを画面に出力
-		GF.setTitle("TypingGame");
+		GF.setTitle("TypingGame"+"("+c_name+")");
 		GF.setVisible(true); 
 	}
 
