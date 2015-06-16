@@ -27,40 +27,11 @@ public class TypingTimerTask extends TimerTask{
     	return this.TimerLabel;
     }
     
-    /*public void TimerStop(){
-    	timer.stop();
-    }*/
-    
     public void setText(String str){
     	time_str=str;
     	TimerLabel.setText(time_str);
     }
-    /*@Override
-	public void actionPerformed(ActionEvent e) {
-		 time_str="残り時間は" + (60-sec) + "秒です";
-		 TimerLabel.setText(time_str);
-
-		    if (sec >= 60){
-		      timer.stop();
-		      time_str="";
-		      TimerLabel.setText(time_str);
-		      try {
-				TGP.gameEnd();
-			} catch (IOException e1) {
-				// TODO 自動生成された catch ブロック
-				e1.printStackTrace();
-			}
-		    }
-		    else if(sec >=50){
-		    	TimerLabel.setForeground(Color.red);
-		    	sec++;
-		    }
-		    else{
-		      sec++;
-		    }
-		
-	}
-	*/
+  
 	@Override
 	public void run() {
 		time_str="残り時間は" + (60-sec) + "秒です";

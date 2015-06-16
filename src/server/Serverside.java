@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -13,13 +12,24 @@ public class Serverside extends Thread {
 	private static int participant=0;
 	private static String[] name=new String[MAX_PARTICIPANT];
 	private static double[] score=new double[MAX_PARTICIPANT];
+	private static double[] crr;
+	private static long[] sum_typ;
 	public static boolean Flag;
 	public static int[] Pflag=new int[MAX_PARTICIPANT];//参加状態-1未参加、正の数参加,-2切断
-	
+
 	Serverside(){
 		for(int i=0;i<MAX_PARTICIPANT;i++){
 			Pflag[i]=0;
 		}
+		crr= new double[MAX_PARTICIPANT];
+		sum_typ = new long[MAX_PARTICIPANT];
+		//US=new UserScore[MAX_PARTICIPANT];
+	}
+	public static boolean readStartFlag(){
+		return Flag;
+	}
+	public static void changeStartFlag(){
+		Flag=true;
 	}
 	public static String getName(int num){
 		return name[num];
@@ -27,8 +37,18 @@ public class Serverside extends Thread {
 	public static double getScore(int num){
 		return score[num];
 	}
-	public static void addScore(int num,double s){
-		score[num]+=s;
+	public static double getCrr(int num){
+		return crr[num];
+	}
+	public static long getSum(int num){
+		return sum_typ[num];
+	}
+	public static void setScore(int num,double s,double t, long u){
+		if(s>0){
+			score[num]+=s;
+			crr[num]=t;
+			sum_typ[num]+=u;
+		}
 	}
 	public static int getflags(){
 		int temp=0;
@@ -81,6 +101,7 @@ public class Serverside extends Thread {
 				client[participant].start();
 				participant ++;
 				if(participant==MAX_PARTICIPANT||Flag){
+					Flag=true;
 					break;
 				}
 

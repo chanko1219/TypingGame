@@ -13,6 +13,7 @@ public class Client {
 	private String c_name="localhost";		//クライアント名
 	private String s_name="hoge";		//サーバー名
 	private int qetNum;		//問題番号
+	private int myNum;	//自分の参加者番号
 	private int InitPORT=8080; //初期設定のポート番号
 	private int port;
 	private Socket s=null;
@@ -22,6 +23,8 @@ public class Client {
 	private final int MAX_PARTICIPANT=10;
 	private double[] Scores= new double[MAX_PARTICIPANT];
 	private String[] Names=new String[MAX_PARTICIPANT];
+	private double[] crr;
+	private long[] sum_typ;
 	private InetAddress add;
 	private int ptc; //ゲームの実際の参加者
 	
@@ -30,6 +33,8 @@ public class Client {
 		this.s_name=str2;
 		this.qetNum=0;
 		this.flg=0;
+		crr= new double[MAX_PARTICIPANT];
+		sum_typ= new long[MAX_PARTICIPANT];
 	}
 	//サーバーとの接続確立を行いqet_numにサーバーから得た問題番号を格納
 	public void initServer()throws IOException{
@@ -79,36 +84,16 @@ public class Client {
 		return qetNum;
 	}
 
-
+	public void setMyNum() throws NumberFormatException, IOException{
+		out.println("getMyNum");
+		myNum=Integer.parseInt(in.readLine());
+	}
 	//サーバーに得点を送信
-	public void sendScore(double score) throws IOException{
+	public void sendScore(double score, double crr, long sum) throws IOException{
 		out.println("SendScore");
 		out.println(score+"");
-		/*int i=0;
-		String ope="";
-		ope=in.readLine();
-		while(ope.equals("SCORE")){
-			Names[i]=in.readLine();
-			Scores[i]=Double.parseDouble(in.readLine());
-			i++;
-			ope=in.readLine();
-		}
-		this.ptc=i;		//参加者数を記録
-		if(ope.equals("FLAG")){
-			flg=Integer.parseInt(in.readLine());
-		}
-		if(flg==-2){
-			//この関数を呼び出した後,TypginGame.javaの方でゲームの終了処理を入れる
-			endConnection();
-		}else if(flg==1){//初回
-
-		}else if(flg>1){
-			//暫定的なスコア表示の何か
-			for(int j=0;j<i;j++){
-				System.out.println(Names[j]+":"+Scores[j]);
-			}
-		}*/
-		//System.out.println("end,sendScore");
+		out.println(crr+"");
+		out.println(sum+"");
 	}
 	public void endConnection(){
 		out.println("END");
@@ -126,10 +111,11 @@ public class Client {
 		int i=0;
 		String ope="";
 		ope=in.readLine();
-		System.out.println("test");
 		while(ope.equals("SCORE")){
 			Names[i]=in.readLine();
 			Scores[i]=Double.parseDouble(in.readLine());
+			crr[i]=Double.parseDouble(in.readLine());
+			sum_typ[i]=Long.parseLong(in.readLine());
 			i++;
 			ope=in.readLine();
 		}
@@ -150,6 +136,18 @@ public class Client {
     //参加者全員の名前を取得
     public String[] getNames(){
     	return this.Names;
+    }
+    
+    public double[] getCrr(){
+    	return this.crr;
+    }
+    
+    public long[] getSum(){
+    	return this.sum_typ;
+    }
+    
+    public int getMyNum(){
+    	return this.myNum;
     }
     
 	//ゲームが開始できるかサーバーに確認（得点要求できるかも確認）

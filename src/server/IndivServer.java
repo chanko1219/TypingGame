@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,7 +11,7 @@ import java.net.Socket;
 public class IndivServer extends Thread{
 //	String name;
 	int port;
-	int num;
+	private int num;
 	int point=0;
 	private Socket socket;
 //	Client(String name,int port,Socket socket){
@@ -22,13 +21,17 @@ public class IndivServer extends Thread{
 		this.socket=socket;
 		Starter2.addlog(Serverside.getName(num)+"さんとの接続を個別スレッドに移行");
 	}
+	
 
 	public void run(){
 		int qnum=0;
 		boolean flag=true;
 		String ope;
 		double temp;
-		int counter=1;
+		double score;
+		double crr;
+		long sum;
+		int counter=2;
 		Serverside.Pflag[num]=1;
 		try{
 			BufferedReader in=
@@ -43,72 +46,34 @@ public class IndivServer extends Thread{
 			while(flag){
 				ope=in.readLine();
 				if(ope.equals("GetNum")){
+					if(!Serverside.readStartFlag()){
+						Starter2.addlog(Serverside.getName(num)+"さんは先行して開始しました");
+					}
 					Starter2.addlog(Serverside.getName(num)+"に問題番号"+qnum+"を出題");
 					out.println(qnum+"");
 					qnum++;
 				}else if(ope.equals("SendScore")){
-					temp=Double.parseDouble(in.readLine());
-
-					Starter2.addlog(Serverside.getName(num)+"の"+(counter-1)+"回目のスコアは"+temp);
-					Serverside.Pflag[num]++;//スコアを受信したらフラグの値を増やす。この値がみんな同じなら全員分のスコアを送信
-					Serverside.addScore(num, temp);
-					counter++;
-					//Serverside.Pflag[num] ++;//スコアを受信したらフラグの値を増やす。この値がみんな同じなら全員分のスコアを送信
-					/*if(temp>=0){
-						System.out.println("test");
-						Serverside.addScore(num, temp);
-						Serverside.Pflag[num] ++;//スコアを受信したらフラグの値を増やす。この値がみんな同じなら全員分のスコアを送信
-						System.out.println("Serverside.getflags="+Serverside.getflags()+",Plag"+Serverside.Pflag[num]);
-						while(true){
-							if(Serverside.getflags()==Serverside.Pflag[num]){
-								for(int i=0;i<Serverside.MAX_PARTICIPANT;i++){
-									if(Serverside.Pflag[i]>0){
-										out.println("SCORE");
-										out.println(Serverside.getName(i));
-										out.println(Serverside.getScore(i)+"");
-									}
-								}
-								out.println("FLAG");
-								out.println(counter+"");
-								counter ++;
-								break;
-							}
-						}
-					}else{
-						while(true){
-							//Starter2.addlog(Serverside.Pflag[num]+":"+Serverside.Flag);
-							System.out.print("");
-							if((Serverside.getflags()==Serverside.Pflag[num])&&Serverside.Flag){
-								Starter2.addlog("startflag to "+Serverside.getName(num));
-								out.println("FLAG");
-								out.println(counter+"");
-								counter ++;
-								break;
-							}
-						}
-					}*/
+					score=Double.parseDouble(in.readLine());
+					crr=Double.parseDouble(in.readLine());
+					sum=Long.parseLong(in.readLine());
+					Serverside.changeStartFlag();
+					if(score>=0){
+						Starter2.addlog(Serverside.getName(num)+"の"+(counter-1)+"回目のスコアは"+score);
+						Serverside.Pflag[num]++;//スコアを受信したらフラグの値を増やす。この値がみんな同じなら全員分のスコアを送信
+						Serverside.setScore(num, score,crr,sum);
+						counter++;
+					}
 				}else if(ope.equals("END")){
 					flag=false;
 				}
-				
+
 				else if(ope.equals("getStartable")){
-					if(counter==2){
-						System.out.print("");
-						if(Serverside.getflags()==Serverside.Pflag[num]&&Serverside.Flag){
-							out.println("ok");
-						}
-						else{
-							out.println("yet");
-						}
+					System.out.print("");
+					if(Serverside.getflags()==Serverside.Pflag[num]&&Serverside.Flag){
+						out.println("ok");
 					}
 					else{
-						System.out.print("");
-						if(Serverside.getflags()==Serverside.Pflag[num]){
-							out.println("ok");
-						}
-						else{
-							out.println("yet");
-						}
+						out.println("yet");
 					}
 				}
 				else if(ope.equals("comScore")){
@@ -117,12 +82,18 @@ public class IndivServer extends Thread{
 							out.println("SCORE");
 							out.println(Serverside.getName(i));
 							out.println(Serverside.getScore(i)+"");
+							out.println(Serverside.getCrr(i)+"");
+							out.println(Serverside.getSum(i)+"");
 						}
 					}
 					out.println("all");
 				}
+				
+				else if(ope.equals("getMyNum")){
+					out.println(num);
+				}
 				else if(ope.equals("")){
-					
+
 				}
 
 			}

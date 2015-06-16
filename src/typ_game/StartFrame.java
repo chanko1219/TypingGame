@@ -5,10 +5,12 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -20,6 +22,7 @@ public class StartFrame extends JFrame implements ActionListener {
 	private JTextField s_field;
 	private String c_name;
 	private String s_name;
+	private GameFrame GF;
 	
 	StartFrame(){
 	    JButton stBtn = new JButton("開始");
@@ -41,8 +44,13 @@ public class StartFrame extends JFrame implements ActionListener {
 		c_name=c_field.getText();
 		s_name=s_field.getText();
 		
-		GameMain.Frame.setVisible(false);
-		GameFrame GF = new GameFrame(c_name,s_name);
+		try{
+			GF = new GameFrame(c_name, s_name);
+			GameMain.Frame.setVisible(false);
+		}
+		catch(IOException e1){
+			JOptionPane.showMessageDialog(this,"Connection Error");
+		}
 		GF.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//右上の×印を押した時の動作
 		GF.setBounds(500, 100, 600, 300);					//生成したGameFrameeのインスタンスであるGFを画面に出力
 		GF.setTitle("TypingGame"+"("+c_name+")");

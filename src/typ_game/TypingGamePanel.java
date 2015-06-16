@@ -31,13 +31,12 @@ public class TypingGamePanel extends JPanel implements KeyListener{
     private FontMetrics fm;	   //文字幅取得r
     private int CF;		   	   //正解判定フラグ
     private Timer timer;		//タイマー
-    private DecimalFormat df; //スコア表示の小数桁数を設定
     public GameFrame GF;		//ゲーム画面
    
     TypingGamePanel(GameFrame gf) throws IOException{
     	        gameConfig = WAITING;
     	        this.GF=gf;
-    	        df= new DecimalFormat("0.00");
+    	  
     }
     
     TypingGamePanel(){
@@ -68,29 +67,29 @@ public class TypingGamePanel extends JPanel implements KeyListener{
     }
     
     public void gameEnd() throws IOException{
-        long sumTime;
-        double crr;
+        long sumTime=0;
+        double crr=0;
         cal = Calendar.getInstance();
         endTime = cal.getTimeInMillis();
         gameConfig = WAITING;
         sumTime = (long)(endTime - startTime);
         if(cnt!=0){
-        	crr=(double)sum_str_len/cnt;
-        	score=(double)sum_str_len/sumTime*1000*60*crr*crr*crr;
+        	crr=(double)(sum_str_len-1)/cnt;
+        	score=(double)(sum_str_len-1)/sumTime*crr*crr*crr;
+        	score*=60000;
         }
         else{
         	score=0;
         }
-        repaint();
-        GF.clt.sendScore(score);
+        GF.clt.sendScore(score,crr,sum_str_len-1);
         GF.setWaitText("Waiting result");	//各プレイヤー（クライアント）のスコアが揃うまで待つ
         GF.changePanel("waiting");
-        while(!GF.clt.getStartable());{	
+        while(!GF.clt.getStartable()){	
         }
         GF.clt.comScore();
         GF.setResultPanel();
         GF.changePanel("result");
-        
+        repaint();
     }
 
     private void nextChar() throws IOException{

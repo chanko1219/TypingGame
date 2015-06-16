@@ -24,23 +24,18 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	private CardLayout layout;
 	private int flg;		//現在の画面フラグ(0:待ち画面,1:ゲーム開始画面,2:結果表示画面)
 	
-	GameFrame(String str1, String str2){
+	GameFrame(String str1, String str2) throws IOException{
 		addKeyListener(this);
 		WP= new WaitPanel();
 		 flg=0;
 		TGP = null;
 		clt = new Client(str1, str2);
 		RP= new ResultPanel(this);
-		try {
-			clt.initServer();
-			timer = new Timer();
-			timer.schedule(new WaitTask(this), 500, 500);
-			clt.sendScore(-1);
-			TGP = new TypingGamePanel(this);
-		} catch (IOException e){
-			e.printStackTrace();
-		}
-		
+		clt.initServer();
+		clt.setMyNum();
+		timer = new Timer();
+		timer.schedule(new WaitTask(this), 500, 500);
+		TGP = new TypingGamePanel(this);	
 		 cardPanel = new JPanel();
 		 layout = new CardLayout();
 		 cardPanel.setLayout(layout);
@@ -69,20 +64,15 @@ public class GameFrame extends JFrame implements ActionListener, KeyListener {
 	public void setWaitText(String str){
 		WP.setText(str);
 	}
-	
-	public void sendScore(){
-		try {
-			clt.sendScore(-1);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
-	}
 	public void setResultPanel(){
 		RP.setParticipant();
+		RP.setMyNum();
 		RP.setScores();
 		RP.setNames();
-		RP.setResultText();
+		RP.setCrr();
+		RP.setSum();
+		RP.setRank();
+		RP.repaint();
 	}
 	
 	public void changeWaitingText(int i){
